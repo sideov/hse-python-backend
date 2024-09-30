@@ -51,66 +51,74 @@ async def app(
         receive: Callable[[], Awaitable[dict[str, Any]]],
         send: Callable[[dict[str, Any]], Awaitable[None]],
 ) -> None:
-    assert scope["type"] == "http"
+    if scope["type"] == "lifespan":
+        while True:
+            message = await receive()
+            if message["type"] == "lifespan.startup":
+                await send({"type": "lifespan.startup.complete"})
+            elif message["type"] == "lifespan.shutdown":
+                await send({"type": "lifespan.shutdown.complete"})
+                return
+    if scope["type"] == "http":
 
-    if scope["method"] != "GET":
+        if scope["method"] != "GET":
+            await send_error(send, 404)
+            return
+
+        if scope["path"] == "/factorial":
+            query_string = scope["query_string"]
+
+            if not query_string.startswith(b'n='):
+                await send_error(send, 422)
+                return
+            value = query_string[2:].decode()
+
+            try:
+                value = int(value)
+            except Exception as e:
+                await send_error(send, 422)
+                return
+
+            if value < 0:
+                await send_error(send, 400)
+                return
+
+            ans = factorial(int(value))
+            await send_200_answer(send, ans)
+            return
+
+        if scope["path"].startswith("/fibonacci"):
+            value = scope["path"][11:]
+
+            try:
+                value = int(value)
+            except Exception as e:
+                await send_error(send, 422)
+                return
+
+            if value < 0:
+                await send_error(send, 400)
+                return
+
+            ans = fib(value)
+            await send_200_answer(send, ans)
+            return
+
+        if scope["path"] == "/mean":
+            raw_body = await receive()
+            body = raw_body["body"].decode()
+
+            try:
+                body = list(map(lambda x: float(x), list(eval(body))))
+            except Exception as e:
+                await send_error(send, 422)
+                return
+
+            if len(body) == 0:
+                await send_error(send, 400)
+                return
+            ans = mean(body)
+            await send_200_answer(send, ans)
+            return
+
         await send_error(send, 404)
-        return
-
-    if scope["path"] == "/factorial":
-        query_string = scope["query_string"]
-
-        if not query_string.startswith(b'n='):
-            await send_error(send, 422)
-            return
-        value = query_string[2:].decode()
-
-        try:
-            value = int(value)
-        except Exception as e:
-            await send_error(send, 422)
-            return
-
-        if value < 0:
-            await send_error(send, 400)
-            return
-
-        ans = factorial(int(value))
-        await send_200_answer(send, ans)
-        return
-
-    if scope["path"].startswith("/fibonacci"):
-        value = scope["path"][11:]
-
-        try:
-            value = int(value)
-        except Exception as e:
-            await send_error(send, 422)
-            return
-
-        if value < 0:
-            await send_error(send, 400)
-            return
-
-        ans = fib(value)
-        await send_200_answer(send, ans)
-        return
-
-    if scope["path"] == "/mean":
-        raw_body = await receive()
-        body = raw_body["body"].decode()
-
-        try:
-            body = list(map(lambda x: float(x), list(eval(body))))
-        except Exception as e:
-            await send_error(send, 422)
-            return
-
-        if len(body) == 0:
-            await send_error(send, 400)
-            return
-        ans = mean(body)
-        await send_200_answer(send, ans)
-        return
-
-    await send_error(send, 404)
