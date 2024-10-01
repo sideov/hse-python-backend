@@ -73,7 +73,7 @@ class Item:
         return Item(
             id=next(idGen),
             name="New Item",
-            price=42,
+            price=0,
             deleted=False
         )
 
