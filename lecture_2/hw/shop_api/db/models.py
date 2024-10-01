@@ -35,7 +35,8 @@ class CartItem:
             "id": self.id,
             "name": self.name,
             "quantity": self.quantity,
-            "available": self.available
+            "available": self.available,
+            "price": self.price,
         }
 
 

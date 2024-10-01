@@ -43,6 +43,7 @@ def addItemToCart(cartId, itemId):
     for item in cart.items:
         if item.id == itemId:
             item.quantity += 1
+            cart.price += item.price
             break
     else:
         item = _items[itemId]

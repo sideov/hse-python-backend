@@ -138,13 +138,15 @@ def test_get_cart_list(query: dict[str, Any], status_code: int):
     if status_code == HTTPStatus.OK:
         data = response.json()
 
+        print(data)
+
         assert isinstance(data, list)
 
         if "min_price" in query:
-            assert all(item["price"] <= query["min_price"] for item in data)
+            assert all(item["price"] >= query["min_price"] for item in data)
 
         if "max_price" in query:
-            assert all(item["price"] >= query["max_price"] for item in data)
+            assert all(item["price"] <= query["max_price"] for item in data)
 
         quantity = sum(item["quantity"] for item in data)
 
