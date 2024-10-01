@@ -1,6 +1,3 @@
-**Для запуска первой домашки необходимо прописать в консоли uvicorn homework_1.hw1:app. После этого можно запустить тесты**
-
-
 # Python Backend
 
 - [Репозиторий с примерами](https://github.com/katunilya/hse-python-backend) -
