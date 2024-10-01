@@ -28,6 +28,7 @@ class CartItem:
             name="CartItem",
             quantity=0,
             available=True,
+            price=0
         )
 
     def toResponse(self):
