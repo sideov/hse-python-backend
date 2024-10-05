@@ -7,13 +7,14 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-uvicorn = "^0.30.6"
-fastapi = "^0.114.2"
+uvicorn = "^0.31.0"
+fastapi = "^0.115.0"
 requests = "^2.32.3"
 grpcio = "^1.66.1"
 grpcio-tools = "^1.66.1"
 websockets = "^13.1"
 websocket-client = "^1.8.0"
+prometheus-fastapi-instrumentator = "^7.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
